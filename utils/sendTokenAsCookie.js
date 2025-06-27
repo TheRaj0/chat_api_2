@@ -2,10 +2,10 @@ const jwt = require('jsonwebtoken');
 
 module.exports = (userId, res) => {
     const token = jwt.sign({userId}, process.env.JWT_SECREAT, {
-        expiresIn: '15d'
+        expiresIn: '1y'
     });
     res.cookie('token', token, {
-        maxAge: 15 * 24 * 60 * 60 * 1000,
+        maxAge: 365 * 24 * 60 * 60 * 1000,
         httpOnly:true,
         sameSite:'none',
         secure:true,
