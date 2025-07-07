@@ -18,22 +18,30 @@ app.use(express.json());
 const allowedOrigins = process.env.ORIGIN
   ? process.env.ORIGIN.split(',').map(origin => origin.trim())
   : [];
+
 app.use(cors({
     credentials:true,
-    
     origin: function (origin, callback) {
-        // Allow requests with no origin (like curl, mobile apps)
         if (!origin) return callback(null, true);
-    
-        if (allowedOrigins.includes(origin)) {
+        if (allowedOrigins.includes(origin) || origin === 'null') {
           callback(null, true);
         } else {
           callback(new Error('Not allowed by CORS'));
         }
     },
-    
 }));
 
+app.options('*', cors({
+    credentials:true,
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin) || origin === 'null') {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+    },
+}));
 
 app.use(cookieParser());
 
