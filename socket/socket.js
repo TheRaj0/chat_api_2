@@ -4,10 +4,15 @@ const http = require('http');
 
 const app = express();
 const server = http.createServer(app);
+
+const allowedOrigins = process.env.ORIGIN
+  ? process.env.ORIGIN.split(',').map(origin => origin.trim())
+  : [];
+
 const io = new Server(server, {
     path:'/socket.io',
     cors:{
-        origin:process.env.ORIGIN,
+        origin:allowedOrigins,
         method:["GET", "POST"],
         credentials:true,
     }
