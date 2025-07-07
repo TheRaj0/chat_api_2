@@ -14,10 +14,27 @@ const PORT = process.env.PORT || 5000;
 
 // middlewares
 app.use(express.json());
+
+const allowedOrigins = process.env.ORIGIN
+  ? process.env.ORIGIN.split(',').map(origin => origin.trim())
+  : [];
 app.use(cors({
     credentials:true,
-    origin:process.env.ORIGIN,
+    
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like curl, mobile apps)
+        if (!origin) return callback(null, true);
+    
+        if (allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+    },
+    
 }));
+
+
 app.use(cookieParser());
 
 // routes
