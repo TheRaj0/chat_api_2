@@ -8,13 +8,13 @@ const signup = async (req, res) => {
         if(!username || !password || !fullName || !gender) return res.status(400).json({error: "All fields must be filled."});
 
         username = username.toLowerCase().trim();
-        const usernameRegex = /^[a-z0-9._]+$/;
-    
+        const usernameRegex = /^(?![._])[a-z0-9._]+(?<![._])$/;    
+        
         if (!usernameRegex.test(username)) {
             return res.status(400).json({ error: "Username contains invalid characters." });
         }
         
-        if(password.length < 6) return res.status(400).json({error: "Password must be at least 6 charecters long."});
+        if(password.length < 6) return res.status(400).json({error: "Password must be at least 6 characters long."});
         if(username.length < 3 || username.length > 20) return res.status(400).json({error: "Username must be between 3 and 20 characters long."});
 
         const oldUser = await User.findOne({username});
@@ -59,7 +59,7 @@ const login = async (req, res) => {
         
         const user = await User.findOne({username});
         const isPasswordCorrect = await bcrypt.compare(password, user?.password || "");
-        if(!user || !isPasswordCorrect) return res.status(402).json({error: "Invalid username or password"})
+        if(!user || !isPasswordCorrect) return res.status(401).json({error: "Invalid username or password"})
 
         sendTokenAsCookie(user._id, res);
         res.status(200).json({
@@ -78,7 +78,7 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
-        res.cookie('token', '', {maxAge: 0}).status(200).json({message:"Succesfully logged out."});
+        res.cookie('token', '', {maxAge: 0}).status(200).json({message:"Successfully logged out."});
     } catch (error) {
         console.log("Error in logout controller", error.message);
         res.status(500).json({error: "Something went wrong."});
